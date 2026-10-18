@@ -172,15 +172,16 @@ const build_html = (meta: string[], files: FileStat[], diffs: FileDiff[]): strin
   const ans = `<!doctype html>
 <html><head><meta charset="utf-8"><title>${esc(subj)}</title><style>${css}</style></head>
 <body>
-  <h1>${esc(subj)}</h1>
+  <h3>description</h3>
+  ${esc(subj)}
   <div class="meta">
     <code>${esc(hash.slice(0, 8))}</code> by ${esc(name)} &lt;${esc(mail)}&gt;
     on ${esc(new Date(date).toLocaleString())}
   </div>
   ${body ? `<pre>${esc(body)}</pre>` : ""}
-  <h2>${files.length} files changed, <span class="add">+${add}</span> <span class="del">-${del}</span></h2>
+  <h3>${files.length} files changed, <span class="add">+${add}</span> <span class="del">-${del}</span></h3>
   <table><tr><th>File</th><th>Added</th><th>Removed</th></tr>${rows}</table>
-  <h2>Diff</h2>
+  <h3>Diff</h3>
   ${diff_html}
 </body></html>`;
   return ans;
