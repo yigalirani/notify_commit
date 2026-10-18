@@ -4,49 +4,92 @@
 import crypto from "node:crypto";
 import {run_report} from './report.js'
 import { readFileSync } from 'node:fs';
-import { TransformDecodeCheckError }       from '@sinclair/typebox/value';
-import { Type,type Static,TSchema} from '@sinclair/typebox'
-import { TypeCompiler }                    from "@sinclair/typebox/compiler";
-import { report } from "node:process";
-function read_typebox<T extends TSchema>(config_data: string, schema: T): Static<T > {
-  try{
-    //const config_data = await readFile(filename, "utf8");
-    const compiler = TypeCompiler.Compile(schema);
-    const parsed_json = JSON.parse(config_data)as unknown;
-    const ans = compiler.Decode(parsed_json);
-    return ans;
-  }catch(ex){
-    if (ex instanceof TransformDecodeCheckError){
-      console.error("failed open config data,",ex.error.message,ex.error.path)
-      throw new Error('failed open config file',{ cause: ex })
-    }    
-    if (ex instanceof Error){
-      console.error("failed open config data,",ex.message)
+export interface KeyPair {
+  type: string;
+  project_id: string;
+  private_key_id: string;
+  private_key: string;
+  client_email: string;
+  client_id: string;
+  auth_uri: string;
+  token_uri: string;
+  auth_provider_x509_cert_url: string;
+  client_x509_cert_url: string;
+  universe_domain: string;
+}
+
+export interface TokenResponse {
+  access_token: string;
+  scope?: string;
+  token_type: string;
+  expires_in: number;
+}
+
+function require_string(value: Record<string, unknown>, field: string): string {
+  const v = value[field];
+  if (typeof v !== "string") {
+    throw new Error(`config field "${field}" must be a string`);
+  }
+  return v;
+}
+
+function parse_key_pair(config_data: string): KeyPair {
+  try {
+    const parsed = JSON.parse(config_data) as unknown;
+    if (typeof parsed !== "object" || parsed === null) {
+      throw new Error("config is not an object");
     }
-    throw new Error("failed open config file",{ cause: ex })
+    const obj = parsed as Record<string, unknown>;
+    for (const field of [
+      "type",
+      "project_id",
+      "private_key_id",
+      "private_key",
+      "client_email",
+      "client_id",
+      "auth_uri",
+      "token_uri",
+      "auth_provider_x509_cert_url",
+      "client_x509_cert_url",
+      "universe_domain",
+    ]) {
+      require_string(obj, field);
+    }
+    return parsed as KeyPair;
+  } catch (ex) {
+    if (ex instanceof Error) {
+      console.error("failed open config data,", ex.message);
+    }
+    throw new Error("failed open config file", { cause: ex });
   }
 }
 
-export const key_pair_schema = Type.Object({
-  type: Type.String(),
-  project_id: Type.String(),
-  private_key_id: Type.String(),
-  private_key: Type.String(),
-  client_email: Type.String(),
-  client_id: Type.String(),
-  auth_uri: Type.String(),
-  token_uri: Type.String(),
-  auth_provider_x509_cert_url: Type.String(),
-  client_x509_cert_url: Type.String(),
-  universe_domain: Type.String()
-})
-
-export const token_response_schema = Type.Object({
-  access_token: Type.String(),
-  scope: Type.Optional(Type.String()),
-  token_type: Type.String(),
-  expires_in: Type.Number(),
-})
+function parse_token_response(config_data: string): TokenResponse {
+  const parsed = JSON.parse(config_data) as unknown;
+  if (typeof parsed !== "object" || parsed === null) {
+    throw new Error("token response is not an object");
+  }
+  const obj = parsed as Record<string, unknown>;
+  if (typeof obj.access_token !== "string") {
+    throw new Error("token response missing access_token");
+  }
+  if (typeof obj.token_type !== "string") {
+    throw new Error("token response missing token_type");
+  }
+  if (typeof obj.expires_in !== "number") {
+    throw new Error("token response missing expires_in");
+  }
+  const { scope } = obj;
+  if (scope !== undefined && typeof scope !== "string") {
+    throw new Error("token response scope must be a string");
+  }
+  return {
+    access_token: obj.access_token,
+    scope,
+    token_type: obj.token_type,
+    expires_in: obj.expires_in,
+  };
+}
 
 function base64url(input: string | Buffer): string {
   return Buffer.from(input)
@@ -56,7 +99,7 @@ function base64url(input: string | Buffer): string {
     .replace(/=+$/, "");
 }
 
-function createJwt(key:Static<typeof key_pair_schema>,email_from:string): string {
+function createJwt(key:KeyPair,email_from:string): string {
   //const key=JSON.parse(readFile('key.json','utf8'))
   const now = Math.floor(Date.now() / 1000);
   const header = { alg: "RS256", typ: "JWT" };
@@ -80,7 +123,7 @@ class Gmail{
   key
   access_token:string|undefined
   constructor(public keypair:string,public email_from:string){
-    this.key= read_typebox(keypair,key_pair_schema)
+    this.key= parse_key_pair(keypair)
   }      
   async  getAccessToken(): Promise<string> {
     const jwt =  createJwt(this.key,this.email_from);
@@ -93,7 +136,7 @@ class Gmail{
     const res = await fetch("https://oauth2.googleapis.com/token",request_init);
 
     if (!res.ok) throw new Error(await res.text());
-    const json = read_typebox(await res.text(), token_response_schema);
+    const json = parse_token_response(await res.text());
     console.log({json})
     return json.access_token;
   }
@@ -132,9 +175,9 @@ ${content}`;
   
 async function main(){
   const key= readFileSync('key.json','utf8')//src/index.ts:133:34 - error TS2345: Argument of type 'string' is not assignable to parameter of type '(err: ErrnoException | null, data: NonSharedBuffer) => void'.
-  //const key=process.env.KEYJSON
-  //if (key==null)
-  //  throw new Error('KEYJSON env var not found')
+  /*const key=process.env.KEYJSON
+  if (key==null)
+    throw new Error('KEYJSON env var not found')*/
   const gmail=new Gmail(key,'yigal@symbolclick.com')
   const {content,description}=await run_report()
   await gmail.send({
