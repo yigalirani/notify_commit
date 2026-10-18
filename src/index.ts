@@ -2,11 +2,12 @@
 //const EMAIL_TO = "yigal_i@hotmail.com"; 
 
 import crypto from "node:crypto";
-
+import {run_report} from './report.js'
 import { readFileSync } from 'node:fs';
 import { TransformDecodeCheckError }       from '@sinclair/typebox/value';
 import { Type,type Static,TSchema} from '@sinclair/typebox'
 import { TypeCompiler }                    from "@sinclair/typebox/compiler";
+import { report } from "node:process";
 function read_typebox<T extends TSchema>(config_data: string, schema: T): Static<T > {
   try{
     //const config_data = await readFile(filename, "utf8");
@@ -132,10 +133,11 @@ ${content}`;
 async function test(){
   const key= readFileSync('key.json','utf8')//src/index.ts:133:34 - error TS2345: Argument of type 'string' is not assignable to parameter of type '(err: ErrnoException | null, data: NonSharedBuffer) => void'.
   const gmail=new Gmail(key,'yigal@symbolclick.com')
+  const content=await run_report()
   await gmail.send({
     title:'hello',
     to:'yigal.irani@gmail.com',
-    content:'hello<h1>world</h1>'
+    content
   })
 }
 void test()
