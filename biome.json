@@ -1,0 +1,68 @@
+{
+  "files": {
+    "includes": [
+      "**/src/**",
+      "!**/dist",
+      "!types",
+      "!**/*.json"
+    ]
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "off"
+      }
+    }
+  },
+  "json": {
+    "linter": {
+      "enabled": false
+    }
+  },
+  "linter": {
+    "rules": {
+      "security":{
+        "noDangerouslySetInnerHtml":"off"
+      },
+      "a11y":"off",
+      "correctness":"on",
+      "correctness":{
+        "useExhaustiveDependencies":"off",
+        "noUnusedFunctionParameters":"off",
+        "noConstantCondition":"off",
+        "noUnusedImports":"warn",
+        "noUnreachable":"off",
+        "noUnusedImports": "off",
+        "noUnusedVariables":"off"
+      },
+      "performance":"on",
+      "performance": {
+        "noNamespaceImport": "off"
+      },
+      "nursery": "warn",
+      "nursery":{
+        "useExplicitType":"off"
+      },
+      "suspicious": "on",
+      "suspicious": {
+        "noConsole":"off",
+        "noConfusingVoidType":"warn",
+        "noExplicitAny":"warn",
+        "noDebugger":"warn"
+      },
+      "complexity": "on",
+      "complexity": {
+        "useArrowFunction": "off",
+        "useOptionalChain": "off",
+        "noExcessiveCognitiveComplexity": "off",
+        "useLiteralKeys":"off"
+      },
+      "style":"on",
+      "style": {
+        "useImportType":"off",
+        "noNonNullAssertion": "off",
+        "useTemplate": "warn"
+      }
+    }
+  }
+}

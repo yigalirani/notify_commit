@@ -1,0 +1,81 @@
+{
+  "name": "notify_commit",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "node build.ts",
+    "run":"node dist/index.js",
+    "tsc": "rm -rf types & tsc --build",
+    "eslint": "eslint . --color ",
+    "oxlinttypeaware": "oxlint . --type-aware",
+    "oxlint": "oxlint ",
+    "biome": "biome lint --colors=force"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scriptsmon": {
+    "knip": [
+      "knip.json",
+      "$tsc"
+    ],
+    "build": [
+      "!client/**",
+      "**/src/**/*.{ts,tsx}",
+      "package.json",
+      "build.ts"
+    ],
+    "build-sticky": "dist/index.js",
+    "eslint,tsc": [
+      "!types/**",
+      "**/src/**/*.{ts,tsx}",
+      "**/build.ts",
+      "**/tsconfig.json",
+      "eslint.config.mjs",
+      "tsconfig.base.json"
+    ],
+    "oxlint,oxlinttypeaware": [
+      "$eslint",
+      ".oxlintrc.json"
+    ],
+    "biome": [
+      "$eslint",
+      "biome.json"
+    ],
+    "biome_ignore": [
+      "$eslint",
+      "biome_ignore.json"
+    ],
+    "#dev": [
+      "eslint",
+      "tsc",
+      "oxlinttypeaware",
+      "biome",
+      "build",
+      "oxlint",
+      "biome2"
+    ]
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.13",
+    "@eslint/js": "^10",
+    "@types/lodash-es": "^4.17.12",
+    "@types/node": "^25.9.9",
+    "esbuild": "0.28.0",
+    "eslint": "^10",
+    "eslint-import-resolver-typescript": "4.4.4",
+    "eslint-plugin-import-x": "4.16.2",
+    "globals": "^17.5.0",
+    "oxlint": "^1.61.0",
+    "oxlint-tsgolint": "^7.0.2001",
+    "typescript": "^6",
+    "typescript-eslint": "8.59.0"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.52",
+    "lodash-es": "^4.18.1",
+    "upath": "^3.0.7"
+  }
+}

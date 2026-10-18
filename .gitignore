@@ -1,0 +1,8 @@
+node_modules
+types/bin
+types/eslint.config.d.mts
+.playwright-mcp/
+dist
+generated*
+types,
+key.json
