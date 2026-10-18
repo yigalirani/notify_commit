@@ -139,6 +139,7 @@
     "unicorn/prefer-export-from":"off",
     "unicorn/prefer-dom-node-text-content":"off",
     "one-var": "off",
-    "unicorn/prefer-top-level-await":"off"
+    "unicorn/prefer-top-level-await":"off",
+    "unicorn/prefer-type-error":"off"
   }
 }
