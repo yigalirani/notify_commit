@@ -155,7 +155,7 @@ const render_diff = (d: FileDiff): string => {
   return ans;
 };
 
-const build_html = (meta: string[], files: FileStat[], diffs: FileDiff[]): string => {
+const build_html = (meta: string[], files: FileStat[], diffs: FileDiff[])=> {
   const [hash = "", name = "", mail = "", date = "", subj = "", body = ""] = meta;
   let rows = "";
   let add = 0;
@@ -169,11 +169,12 @@ const build_html = (meta: string[], files: FileStat[], diffs: FileDiff[]): strin
   for (const d of diffs) {
     if (d.rows.length > 0) diff_html += render_diff(d);
   }
-  const ans = `<!doctype html>
+  const description=esc(subj)
+  const content = `<!doctype html>
 <html><head><meta charset="utf-8"><title>${esc(subj)}</title><style>${css}</style></head>
 <body>
   <h3>description</h3>
-  ${esc(subj)}
+  ${description}
   <div class="meta">
     <code>${esc(hash.slice(0, 8))}</code> by ${esc(name)} &lt;${esc(mail)}&gt;
     on ${esc(new Date(date).toLocaleString())}
@@ -184,7 +185,7 @@ const build_html = (meta: string[], files: FileStat[], diffs: FileDiff[]): strin
   <h3>Diff</h3>
   ${diff_html}
 </body></html>`;
-  return ans;
+return {content,description}
 };
 
 export const run_report = async ()=> {
@@ -193,10 +194,10 @@ export const run_report = async ()=> {
     git(["show", "--numstat", "--format=", "HEAD"]),
     git(["show", "-U2", "--format=", "HEAD"]),
   ]);
-  const html = build_html(meta.split("\0"), parse_stats(stat), parse_diff(diff));
-  await writeFile("report.html", html);
+  const ans = build_html(meta.split("\0"), parse_stats(stat), parse_diff(diff));
+  await writeFile("report.html", ans.content);
   console.log("Wrote report.html");
-  return html
+  return ans
 };
 
 /*main().catch((e: unknown) => {

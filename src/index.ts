@@ -130,15 +130,18 @@ ${content}`;
   }
 }
   
-async function test(){
+async function main(){
   const key= readFileSync('key.json','utf8')//src/index.ts:133:34 - error TS2345: Argument of type 'string' is not assignable to parameter of type '(err: ErrnoException | null, data: NonSharedBuffer) => void'.
+  //const key=process.env.KEYJSON
+  if (key==null)
+    throw new Error('KEYJSON env var not found')
   const gmail=new Gmail(key,'yigal@symbolclick.com')
-  const content=await run_report()
+  const {content,description}=await run_report()
   await gmail.send({
-    title:'hello',
+    title:description.substring(0,78),
     to:'yigal.irani@gmail.com',
     content
   })
 }
-void test()
+void main()
 //sendMail().catch(console.error);

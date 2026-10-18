@@ -1,6 +1,5 @@
 node_modules
-types/bin
-types/eslint.config.d.mts
+types
 .playwright-mcp/
 dist
 generated*
