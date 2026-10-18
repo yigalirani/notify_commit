@@ -4,7 +4,7 @@ await esbuild.build({
   platform: 'node',
   bundle: true,
   outdir: './dist',
-  sourcemap: 'inline',
+  sourcemap: 'linked',
   target: 'node24',
   minifySyntax:false,
   format: 'esm',

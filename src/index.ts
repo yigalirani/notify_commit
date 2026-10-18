@@ -99,7 +99,7 @@ class Gmail{
   }
   async send({title,to,content}:{
     title:string,
-    to:string,
+    to:string[],
     content:string
   }){
     
@@ -108,7 +108,7 @@ class Gmail{
   const rawMessage =
   `from: <${this.email_from}>
 encoding: text/html
-to: <${to}>
+to: ${to.join(', ')}
 subject: ${title}
 Content-Type: text/html; charset="UTF-8"
 
@@ -133,13 +133,13 @@ ${content}`;
 async function main(){
   const key= readFileSync('key.json','utf8')//src/index.ts:133:34 - error TS2345: Argument of type 'string' is not assignable to parameter of type '(err: ErrnoException | null, data: NonSharedBuffer) => void'.
   //const key=process.env.KEYJSON
-  if (key==null)
-    throw new Error('KEYJSON env var not found')
+  //if (key==null)
+  //  throw new Error('KEYJSON env var not found')
   const gmail=new Gmail(key,'yigal@symbolclick.com')
   const {content,description}=await run_report()
   await gmail.send({
     title:description.substring(0,78),
-    to:'yigal.irani@gmail.com',
+    to:['yigal.irani@gmail.com','yigal@symbolclick.com'],
     content
   })
 }
