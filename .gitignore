@@ -6,3 +6,4 @@ dist
 generated*
 types,
 key.json
+report.html
