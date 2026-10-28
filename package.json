@@ -1,10 +1,14 @@
 {
   "name": "@yigal/notify_commit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI that emails an HTML report of the latest git commit via the Gmail API",
   "type": "module",
   "main": "dist/index.js",
   "types": "types/src/index.d.ts",
+  "repository": {
+    "type"                   : "git",
+    "url"                    : "git+https://github.com/yigalirani/notify_commit.git"
+  },
   "bin": {
     "notify_commit": "dist/index.js"
   },

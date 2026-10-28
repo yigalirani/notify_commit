@@ -1,0 +1,22 @@
+name: Run Node on Commit
+on:
+  push:
+    branches: ["**"]
+permissions:
+  contents: read
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npx --yes @yigal/notify_commit
+        env:
+          KEYJSON: ${{ secrets.KEYJSON }}
+          KEYFROM: yigal@symbolclick.com
+          KEYTO: yigal@symbolclick.com,einat2hg@gmail.com
