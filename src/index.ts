@@ -4,6 +4,7 @@
 import crypto from "node:crypto";
 import {run_report} from './report.js'
 import { readFileSync } from 'node:fs';
+import { cleanEnv, makeValidator, email, str } from 'envalid';
 export interface KeyPair {
   type: string;
   project_id: string;
@@ -173,19 +174,27 @@ ${content}`;
   }
 }
   
+const email_list = makeValidator((input: string): string[] => {
+  const parts=input.split(',').map((part) => part.trim()).filter((part) => part.length>0)
+  if (parts.length===0) throw new Error('must contain at least one email address')
+  return parts.map((part) => email()._parse(part))
+})
+
+function validate_env(){
+  return cleanEnv(process.env, {
+    KEYJSON: str({ desc: 'Gmail service-account key as a JSON string' }),
+    KEYFROM: email({ desc: "Sender's email address" }),
+    KEYTO: email_list({ desc: 'Comma-separated list of recipient email addresses' }),
+  })
+}
+
 async function main(){
-  const key= readFileSync('key.json','utf8')//src/index.ts:133:34 - error TS2345: Argument of type 'string' is not assignable to parameter of type '(err: ErrnoException | null, data: NonSharedBuffer) => void'.
-  /*const key=process.env.KEYJSON
-  if (key==null)
-    throw new Error('KEYJSON env var not found')*/
-  const {KEYFROM,KEYTO}=process.env//'yigal@symbolclick.com'
-  
-  //const KEYTO='yigal.irani@gmail.com,yigal@symbolclick.com'
-  const gmail=new Gmail(key,KEYFROM)
+  const env=validate_env()
+  const gmail=new Gmail(env.KEYJSON,env.KEYFROM)
   const {content,description}=await run_report()
   await gmail.send({
     title:description.substring(0,78),
-    to:KEYTO.split(','),
+    to:env.KEYTO,
     content
   })
 }
