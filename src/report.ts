@@ -195,8 +195,8 @@ export const run_report = async ()=> {
     git(["show", "-U2", "--format=", "HEAD"]),
   ]);
   const ans = build_html(meta.split("\0"), parse_stats(stat), parse_diff(diff));
-  await writeFile("report.html", ans.content);
-  console.log("Wrote report.html");
+  //await writeFile("report.html", ans.content);
+  //console.log("Wrote report.html");
   return ans
 };
 

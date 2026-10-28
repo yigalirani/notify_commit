@@ -1,20 +1,40 @@
 {
-  "name": "notify_commit",
+  "name": "@yigal/notify_commit",
   "version": "1.0.0",
-  "description": "",
+  "description": "CLI that emails an HTML report of the latest git commit via the Gmail API",
   "type": "module",
   "main": "dist/index.js",
+  "types": "types/src/index.d.ts",
+  "bin": {
+    "notify_commit": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "build": "node build.ts",
     "run": "node dist/index.js",
+    "prepublishOnly": "node build.ts",
     "tsc": "rm -rf types & tsc --build",
     "eslint": "eslint . --color ",
     "oxlinttypeaware": "oxlint . --type-aware",
     "oxlint": "oxlint ",
     "biome": "biome lint --colors=force"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "git",
+    "commit",
+    "gmail",
+    "email",
+    "notification",
+    "diff",
+    "report",
+    "cli"
+  ],
+  "author": "yigal",
   "license": "ISC",
   "scriptsmon": {
     "knip": [
