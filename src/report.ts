@@ -173,7 +173,7 @@ const build_html = (meta: string[], files: FileStat[], diffs: FileDiff[])=> {
   const content = `<!doctype html>
 <html><head><meta charset="utf-8"><title>${esc(subj)}</title><style>${css}</style></head>
 <body>
-  <h3>description</h3>
+  <h3>${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}</h3>
   ${description}
   <div class="meta">
     <code>${esc(hash.slice(0, 8))}</code> by ${esc(name)} &lt;${esc(mail)}&gt;
