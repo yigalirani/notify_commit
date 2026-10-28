@@ -178,11 +178,14 @@ async function main(){
   /*const key=process.env.KEYJSON
   if (key==null)
     throw new Error('KEYJSON env var not found')*/
-  const gmail=new Gmail(key,'yigal@symbolclick.com')
+  const {KEYFROM,KEYTO}=process.env//'yigal@symbolclick.com'
+  
+  //const KEYTO='yigal.irani@gmail.com,yigal@symbolclick.com'
+  const gmail=new Gmail(key,KEYFROM)
   const {content,description}=await run_report()
   await gmail.send({
     title:description.substring(0,78),
-    to:['yigal.irani@gmail.com','yigal@symbolclick.com'],
+    to:KEYTO.split(','),
     content
   })
 }
